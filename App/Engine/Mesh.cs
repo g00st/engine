@@ -4,6 +4,7 @@ using DrawElementsType = OpenTK.Graphics.OpenGL4.DrawElementsType;
 using GL = OpenTK.Graphics.OpenGL4.GL;
 using PrimitiveType = OpenTK.Graphics.OpenGL4.PrimitiveType;
 
+
 namespace App.Engine;
 
 public class Mesh
@@ -14,13 +15,13 @@ public class Mesh
         _Vertecies = new List<float[]>();
         _vao = new VAO();
     }
-    private int _verteciesLenght;
-    private Shader _shader;
-    private VAO _vao;
-    private  List<Texture> _texture;
-    private Matrix4 _MVP;
-    private List<float[]> _Vertecies;
-    private uint[] _Indecies;
+    protected int _verteciesLenght;
+    protected Shader _shader;
+    protected VAO _vao;
+    protected  List<Texture> _texture;
+    protected Matrix4 _MVP;
+    protected List<float[]> _Vertecies;
+    protected uint[] _Indecies;
     
     
     public Shader Shader
@@ -55,9 +56,11 @@ public class Mesh
         _vao.LinkElements(ind);
         _Indecies = ind;
     }
+    
+    
 
 
-    public void Draw(Matrix4 mvp)
+    public virtual void Draw(Matrix4 mvp , DrawInfo drawInfo, Vector2 cameraPosition, Matrix4 camera, float cameraRotation)
     {
         //uniform callback haben
         //aus zb shader.frag alle uniforms holen
@@ -70,8 +73,15 @@ public class Mesh
             count++;
         }
 
-            _shader.Bind();
-        _shader.setUniformM4("u_MVP", mvp);         
+        _shader.Bind();
+        _shader.setUniformM4("u_MVP", mvp); 
+        _shader.setUniformV2f ("u_Position",drawInfo.Position);
+        _shader.setUniformV2f ("u_Size",drawInfo.Size);
+        _shader.setUniform1v ("u_Rotation" ,drawInfo.Rotation); 
+        _shader.setUniformV2f ("u_CameraPosition",cameraPosition);
+        _shader.setUniformM4 ("u_Camera",camera);
+        _shader.setUniform1v ("u_CameraRotation" ,cameraRotation);
+        
         GL.DrawElements(PrimitiveType.Triangles, _Indecies.Length, DrawElementsType.UnsignedInt, 0);
 
     }

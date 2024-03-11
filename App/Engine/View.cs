@@ -32,15 +32,13 @@ public class View
         GL.Viewport(0, 0, Width, Height);
         _rendertarget.Bind();
         Matrix4 camera =  calcCameraProjection();
-        GL.ClearColor(Color4.Red);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
         GL.Enable(EnableCap.Blend);
 
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         //statt liste an drawobjects dann eine liste an renderables
         foreach (var drawObject in drawObjects)
         {
-            DrawInfo obj = drawObject.DrawInfo;
+            DrawInfo obj = drawObject.drawInfo;
        
             Matrix4 ObjectScalematrix = Matrix4.CreateScale(obj.Size.X,obj.Size.Y, 1.0f);
             Matrix4 ObjectRotaionmatrix = Matrix4.CreateRotationZ(obj.Rotation);
@@ -55,9 +53,11 @@ public class View
             
           Vector3 cameraRotationAxis = new Vector3(0, 0, 1);
           Matrix4 cameraRotationMatrix = Matrix4.CreateFromAxisAngle(cameraRotationAxis, MathHelper.DegreesToRadians(rotation));
-          Matrix4 comb =   (objectransform* Matrix4.CreateTranslation(-vpossition.X,-vpossition.Y,0) * cameraRotationMatrix *Matrix4.CreateTranslation(vpossition.X,vpossition.Y,0) ) * camera;
+          Matrix4 comb =   objectransform* Matrix4.CreateTranslation(-vpossition.X,-vpossition.Y,0) * cameraRotationMatrix *Matrix4.CreateTranslation(vpossition.X,vpossition.Y,0)  * camera;
             //prüfe was gamestate
-            obj.mesh.Draw(comb);
+          
+            obj.mesh.Draw(comb, obj,vpossition,camera,rotation);
+            
         }
         
         

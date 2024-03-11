@@ -42,7 +42,7 @@ public class SubView
         //statt liste an drawobjects dann eine liste an renderables
         foreach (var drawObject in drawObjects)
         {
-            DrawInfo obj = drawObject.DrawInfo;
+            DrawInfo obj = drawObject.drawInfo;
        
             Matrix4 ObjectScalematrix = Matrix4.CreateScale(obj.Size.X,obj.Size.Y, 1.0f);
             Matrix4 ObjectRotaionmatrix = Matrix4.CreateRotationZ(obj.Rotation);
@@ -57,7 +57,7 @@ public class SubView
           Matrix4 cameraRotationMatrix = Matrix4.CreateFromAxisAngle(cameraRotationAxis, MathHelper.DegreesToRadians(rotation));
           Matrix4 comb =   (objectransform* Matrix4.CreateTranslation(-vpossition.X,-vpossition.Y,0) * cameraRotationMatrix *Matrix4.CreateTranslation(vpossition.X,vpossition.Y,0) )*camera  ;
             //prüfe was gamestate
-            obj.mesh.Draw(comb);
+            obj.mesh.Draw(comb, obj,vpossition,camera,rotation);
         }
         
         

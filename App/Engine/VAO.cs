@@ -8,6 +8,7 @@ public class VAO
 {
     private uint _handle;
     private uint counter = 0;
+    private Dictionary<uint,uint> buffers = new Dictionary<uint, uint>();
     public VAO()
     {
         GL.CreateVertexArrays(1, out _handle);
@@ -15,11 +16,12 @@ public class VAO
         ErrorChecker.CheckForGLErrors("A");
     }
 
-    public void   LinkAtribute(float[] bufferData,Bufferlayout layout )
+    public uint   LinkAtribute(float[] bufferData,Bufferlayout layout,uint divisor = 0)
     {
         uint vbo  = 0;
         float[] a = bufferData.ToArray();
         GL.CreateBuffers(1, out  vbo);
+        buffers.Add(counter,vbo);
         ErrorChecker.CheckForGLErrors("b1");
         GL.NamedBufferData(vbo, bufferData.Length*layout.typesize,bufferData ,BufferUsageHint.StaticDraw );
         ErrorChecker.CheckForGLErrors("b2");
@@ -31,8 +33,28 @@ public class VAO
         ErrorChecker.CheckForGLErrors("b5");
         GL.VertexArrayAttribBinding(_handle,counter,counter);
         ErrorChecker.CheckForGLErrors("b6");
-        counter++;
+        GL.VertexArrayBindingDivisor(_handle, counter, divisor);
+        ErrorChecker.CheckForGLErrors("b7");
+        return counter++;
 
+    }
+    public void UpdateAttributeData(float[] bufferData, Bufferlayout layout, uint location)
+    {
+        if (location >= counter)
+        {
+            throw new ArgumentException("Location is not valid");
+        }
+
+        // Check if the buffer associated with the location exists
+        if (!buffers.ContainsKey(location))
+        {
+            throw new ArgumentException("No buffer exists for the specified location");
+        }
+
+        uint vbo = buffers[location];
+
+        // Update buffer data
+        GL.NamedBufferSubData(vbo, (IntPtr)layout.offset, bufferData.Length * layout.typesize, bufferData);
     }
 
     public void LinkElements(uint[]bufferData)

@@ -11,6 +11,7 @@ public static class ErrorChecker
         while ((errorCode = GL.GetError()) != ErrorCode.NoError)
         {
             Console.WriteLine($"OpenGL Error ({context}): {errorCode}");
+            throw  new Exception($"OpenGL Error ({context}): {errorCode}");
         }
     }
     public static void GLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
