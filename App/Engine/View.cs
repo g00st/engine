@@ -50,13 +50,21 @@ public class View
             
             //Console.Write(objectransform.ToString() + "\n" +" \n");
             
+               
+            Matrix4 translateToOrigin = Matrix4.CreateTranslation(-vpossition.X, -vpossition.Y, 0);
+            Matrix4 rotate = Matrix4.CreateRotationZ(rotation);
+            Matrix4 translateBack = Matrix4.CreateTranslation(vpossition.X, vpossition.Y, 0);
+            Matrix4 view = translateToOrigin * rotate * translateBack;
+
+            Matrix4 projection = calcCameraProjection();
+            
             
           Vector3 cameraRotationAxis = new Vector3(0, 0, 1);
           Matrix4 cameraRotationMatrix = Matrix4.CreateFromAxisAngle(cameraRotationAxis, MathHelper.DegreesToRadians(rotation));
           Matrix4 comb =   objectransform* Matrix4.CreateTranslation(-vpossition.X,-vpossition.Y,0) * cameraRotationMatrix *Matrix4.CreateTranslation(vpossition.X,vpossition.Y,0)  * camera;
             //prüfe was gamestate
           
-            obj.mesh.Draw(comb, obj,vpossition,camera,rotation);
+            obj.mesh.Draw(comb, obj,view,projection);
             
         }
         

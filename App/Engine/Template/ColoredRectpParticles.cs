@@ -45,7 +45,7 @@ public class ColoredRectpParticles : DrawObject
         var f = new float[count*2];
         for (int i = 0; i < count; i++)
         {
-            f[i*2] = i*size.X + 1f; 
+            f[i*2] = i*100; 
             f[i*2+1] = 0.0f;
         }
         

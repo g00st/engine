@@ -3,25 +3,18 @@
 layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec2 instancePosition; // Using vec3 for world coordinates
 
-uniform mat4 u_MVP;
-uniform vec2 u_Position;
-uniform vec2 u_Size;
-uniform float u_Rotation;
-uniform vec2 u_CameraPosition;
-uniform mat4 u_Camera;
-uniform float u_CameraRotation;
 
+uniform mat4 u_Model;
+uniform mat4 u_View;
+uniform mat4 u_Projection;
 
 void main()
 {
-    vec2 position = inPosition;
-    position = position * u_Size;
-    position = vec2(position.x * cos(u_Rotation) - position.y * sin(u_Rotation), position.x * sin(u_Rotation) + position.y * cos(u_Rotation));
-    position += u_Position;
-    position -= u_CameraPosition;
-    position = vec2(position.x * cos(u_CameraRotation) - position.y * sin(u_CameraRotation), position.x * sin(u_CameraRotation) + position.y * cos(u_CameraRotation));
-    position +=  u_CameraPosition;
-    gl_Position = vec4(inPosition, 1.0,1.0) * u_Camera;
-
-   
+    vec4 worldPosition = u_Model * vec4(inPosition-0.5, 0.0, 1.0)  ;
+    worldPosition.xy += instancePosition;; 
+    vec4 cameraPosition = u_View * worldPosition;
+    gl_Position = u_Projection * cameraPosition;
+    //gl_Position = vec4((inPosition*0.1) +(gl_InstanceID *0.1), 0.0, 1.0) ;
 }
+
+

@@ -57,7 +57,17 @@ public class SubView
           Matrix4 cameraRotationMatrix = Matrix4.CreateFromAxisAngle(cameraRotationAxis, MathHelper.DegreesToRadians(rotation));
           Matrix4 comb =   (objectransform* Matrix4.CreateTranslation(-vpossition.X,-vpossition.Y,0) * cameraRotationMatrix *Matrix4.CreateTranslation(vpossition.X,vpossition.Y,0) )*camera  ;
             //prüfe was gamestate
-            obj.mesh.Draw(comb, obj,vpossition,camera,rotation);
+            
+            
+                
+            Matrix4 translateToOrigin = Matrix4.CreateTranslation(-vpossition.X, -vpossition.Y, 0);
+            Matrix4 rotate = Matrix4.CreateRotationZ(rotation);
+            Matrix4 translateBack = Matrix4.CreateTranslation(vpossition.X, vpossition.Y, 0);
+            Matrix4 view = translateToOrigin * rotate * translateBack;
+
+            Matrix4 projection = calcCameraProjection();
+
+            obj.mesh.Draw(comb, obj,view,projection);
         }
         
         

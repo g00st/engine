@@ -40,7 +40,7 @@ public class Game : GameWindow
             Height = height;
             
            var par = new ColoredRectpParticles(new Vector2(0,0), new Vector2(100,100), Color4.Aqua,10,"par");
-       //     Main.addObject(par);
+           Main.addObject(par);
            Main.addObject(new ColoredRectangle(Vector2.Zero , new Vector2(200,200),  Color4.Firebrick));
             for( int i = 0, j = 0; i < 10; i++, j++)
             { 

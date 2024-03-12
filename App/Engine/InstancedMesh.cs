@@ -34,8 +34,8 @@ public class InstancedMesh : Mesh
         }
         
      
-        public virtual void Draw(Matrix4 mvp , DrawInfo drawInfo, Vector2 cameraPosition, Matrix4 camera, float cameraRotation)
-     {
+        public override void Draw(Matrix4 mvp , DrawInfo drawInfo, Matrix4 view,Matrix4 Projection)
+        {
          
          _vao.Bind();
          uint count = 0;
@@ -45,14 +45,17 @@ public class InstancedMesh : Mesh
              VARIABLE.Bind(count);
              count++;
          }
+         Matrix4 Model = Matrix4.CreateScale(drawInfo.Size.X,drawInfo.Size.Y, 1.0f);
+         Model *= Matrix4.CreateRotationZ(drawInfo.Rotation);
+         Model *= Matrix4.CreateTranslation(drawInfo.Position.X,drawInfo.Position.Y,0);
+        
+        
+
          _shader.Bind();
          _shader.setUniformM4("u_MVP", mvp); 
-         _shader.setUniformV2f ("u_Position",drawInfo.Position);
-         _shader.setUniformV2f ("u_Size",drawInfo.Size);
-         _shader.setUniform1v ("u_Rotation" ,drawInfo.Rotation); 
-         _shader.setUniformV2f ("u_CameraPosition",cameraPosition);
-         _shader.setUniformM4 ("u_Camera",camera);
-         _shader.setUniform1v ("u_CameraRotation" ,cameraRotation);
+         _shader.setUniformM4 ("u_Model",Model);
+         _shader.setUniformM4 ("u_View",view);
+         _shader.setUniformM4 ("u_Projection" ,Projection);
          GL.DrawElementsInstanced(PrimitiveType.Triangles, _Indecies.Length, DrawElementsType.UnsignedInt,IntPtr.Zero, instanceCount);
      }
 }
