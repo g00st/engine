@@ -76,7 +76,7 @@ public class View
     private Matrix4 calcCameraProjection()
     {
 
-       return Matrix4.CreateOrthographic(1920, 1080, -1.0f, 1.0f)* Matrix4.CreateTranslation(-1,-1,0);
+        //Matrix4.CreateOrthographic(1920, 1080, -1.0f, 1.0f)* Matrix4.CreateTranslation(-1,-1,0);
         
         float left = vpossition.X - vsize.X / 2.0f;
         float right = vpossition.X + vsize.X / 2.0f;

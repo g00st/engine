@@ -38,7 +38,7 @@ public class DrawInfo
         if (ImGui.CollapsingHeader(drawInfo.Name))
         {
             
-            ImGui.PushID(drawInfo.Name);
+            ImGui.PushID(drawInfo.GetHashCode());
             System.Numerics.Vector2 position = new System.Numerics.Vector2(drawInfo.Position.X, drawInfo.Position.Y);
             if (ImGui.SliderFloat2("Position", ref position, -1000.0f, 1000.0f))
             {

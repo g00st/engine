@@ -25,6 +25,9 @@ public class Game : GameWindow
         View Main = new View();
         private int Width;
         private int Height;
+        private ColoredRectpParticles par;
+        private ColoredRectpParticles par2;
+        private ColoredRectpParticles par3;
     
         private const int TargetFPS = 60; // Set your target FPS here
         private DateTime _lastFrameTime;
@@ -32,27 +35,19 @@ public class Game : GameWindow
    
 
         public Game(int width, int height, string title) : base(GameWindowSettings.Default,
-            new NativeWindowSettings() { Size = (1920/2, 1080/2), Title = "hi", Profile = ContextProfile.Core })
+            new NativeWindowSettings() { ClientSize = (1920, 1080), Title = "hi", Profile = ContextProfile.Core })
         {
             ErrorChecker.InitializeGLDebugCallback(); 
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             Width = width;
             Height = height;
-            
-           var par = new ColoredRectpParticles(new Vector2(0,0), new Vector2(100,100), Color4.Aqua,10,"par");
+            par = new ColoredRectpParticles(new Vector2(1920/2, 1080/2), new Vector2(5,5), Color4.Green,100000,"par");
+            par2 = new ColoredRectpParticles(new Vector2(1920/2, 1080/2), new Vector2(5,5), Color4.Red,100000,"par");
+            par3 = new ColoredRectpParticles(new Vector2(1920/2, 1080/2), new Vector2(5,5), Color4.Blue,100000,"par");
            Main.addObject(par);
-           Main.addObject(new ColoredRectangle(Vector2.Zero , new Vector2(200,200),  Color4.Firebrick));
-            for( int i = 0, j = 0; i < 10; i++, j++)
-            { 
-                Main.addObject(new ColoredRectangle(new Vector2(i * 100, j * 100), new Vector2(100, 100), Color4.Firebrick, "rec" + i));
-            }
-           
-       
-
-            
-           // Main.addObject(new TexturedRectangle(new Vector2( 0,  0), new Vector2(1000, 1000), new Texture("resources/radarcrossection.png")));
-
-            this.Resize += e => Main.Resize(e.Width, e.Height);
+           Main.addObject(par2);
+           Main.addObject(par3);
+           this.Resize += e => Main.Resize(e.Width, e.Height);
             this.Resize += e => this.resize(e.Width, e.Height);
             this.KeyDown += e => Update(e);
         }
@@ -60,8 +55,8 @@ public class Game : GameWindow
         void resize(int width, int height)
         {
             _controller.WindowResized(ClientSize.X, ClientSize.Y);
-            this.Width = width;
-            this.Height = height;
+            this.Width = 1920;
+            this.Height = 1080;
         }
 
 
@@ -74,15 +69,27 @@ public class Game : GameWindow
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
+          
             var elapsed = DateTime.Now - _lastFrameTime;
             var millisecondsPerFrame = 1000 / TargetFPS;
             if (elapsed.TotalMilliseconds < millisecondsPerFrame)
             {
                 var delay = (int)(millisecondsPerFrame - elapsed.TotalMilliseconds);
                 System.Threading.Thread.Sleep(delay);
+                
             }
-            
+            par.Update();
+            par2.Update();
+            par3.Update();
             _lastFrameTime = DateTime.Now;
+            if (MouseState.IsButtonDown(MouseButton.Right))
+            {
+               par.setwWind(new Vector2(MouseState.X, Height- MouseState.Y));
+               
+            }else
+            {
+                par.setwWind(par.drawInfo.Position);
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -93,13 +100,30 @@ public class Game : GameWindow
             Main.draw();
             
               DrawInfo.darwImguiDebugWindow();
-              ImGui.ShowIDStackToolWindow();
+              par.DrawImguiDebug();
+                par2.DrawImguiDebug();
+                par3.DrawImguiDebug();
+          //   ImGui.ShowIDStackToolWindow();
               ImGuiController.CheckGLError("End of frame");
               
               _controller.Render();
             this.SwapBuffers();
 
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         protected override void OnTextInput(TextInputEventArgs e)
         {
             base.OnTextInput(e);

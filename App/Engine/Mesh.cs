@@ -50,6 +50,11 @@ public class Mesh
         
     }
     
+    public uint getBuffer(uint index)
+    {
+        return _vao.GetBuffer(index);
+    }
+    
 
     public void AddIndecies(uint[] ind)
     {

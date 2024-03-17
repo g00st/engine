@@ -23,7 +23,7 @@ public class VAO
         GL.CreateBuffers(1, out  vbo);
         buffers.Add(counter,vbo);
         ErrorChecker.CheckForGLErrors("b1");
-        GL.NamedBufferData(vbo, bufferData.Length*layout.typesize,bufferData ,BufferUsageHint.StaticDraw );
+        GL.NamedBufferData(vbo, bufferData.Length*layout.typesize,bufferData ,BufferUsageHint.DynamicDraw );
         ErrorChecker.CheckForGLErrors("b2");
         GL.EnableVertexArrayAttrib(_handle, counter);
         ErrorChecker.CheckForGLErrors("b3");
@@ -75,6 +75,12 @@ public class VAO
         GL.BindVertexArray(_handle);
         ErrorChecker.CheckForGLErrors("Bind VAO");
     }
+    
+    public uint GetBuffer(uint location)
+    {
+        return buffers[location];
+    }
+   
     
 }
 

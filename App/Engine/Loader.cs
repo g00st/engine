@@ -15,6 +15,11 @@ public static class Loader
     {
         return File.ReadAllText (name);
     }
+    
+    public static string  LoadComputeShader(string name)
+    {
+        return File.ReadAllText (name);
+    }
 
 
     public static ImageResult LoadTexture(string name)
