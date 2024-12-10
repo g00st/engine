@@ -1,0 +1,72 @@
+use core::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Mutex, OnceLock};
+use std::sync::LazyLock;
+
+static LOCK: AtomicBool = AtomicBool::new(false);
+static VALID_FIRMWARE: LazyLock<Mutex<bool>> = LazyLock::new(|| Mutex::new(false));
+
+pub struct FirmwareLock;
+
+impl FirmwareLock {
+    pub fn new() -> Option<Self> {
+        if LOCK.compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed).is_ok() {
+            Some(FirmwareLock)
+        } else {
+            None
+        }
+    }
+
+    pub fn is_locked() -> bool {
+        LOCK.load(Ordering::Acquire)
+    }
+
+    pub fn set_valid_firmware(&self, valid: bool) {
+        let mut valid_firmware = VALID_FIRMWARE.lock().unwrap();
+        *valid_firmware = valid;
+    }
+
+    pub fn is_valid_firmware(&self) -> bool {
+        let valid_firmware = VALID_FIRMWARE.lock().unwrap();
+        *valid_firmware
+    }
+}
+
+impl Drop for FirmwareLock {
+    fn drop(&mut self) {
+        LOCK.store(false, Ordering::Release);
+    }
+}
+
+
+
+
+//-------------------------------------------------------------------------------------------
+
+
+//wrpper aroun the linux powroff command provides a shutown and restart function
+use std::{process::Command, thread};
+
+use crate::flash_lock::FirmwareLock;
+
+pub fn poweroff(firmware_lock: FirmwareLock,delay: u64) {
+    // Spawn a new thread to wait and power off
+    thread::spawn(move || {
+        println!("Powering off in {} seconds...", delay);
+        thread::sleep(std::time::Duration::from_secs(delay));
+        println!("Powering off...");
+        // Simulate power off
+        Command::new("poweroff2").spawn().expect("Failed to power off");
+        drop(firmware_lock);
+    });
+}
+
+pub fn restart(firmware_lock: FirmwareLock,delay: u64) {
+    thread::spawn(move || {
+        println!("restart in {} seconds...", delay);
+        thread::sleep(std::time::Duration::from_secs(delay));
+        println!("restarting...");
+        // Simulate power off
+        Command::new("poweroff2").spawn().expect("Failed to power off");
+        drop(firmware_lock);
+    });
+}
